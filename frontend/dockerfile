@@ -1,0 +1,5 @@
+FROM nginx:1.24.0
+RUN rm -f /usr/share/ngnix/html/index.html
+RUN rm -f /etc/ngnix/nginx.conf
+COPY nginx.conf /etc/ngnix/nginx.conf
+COPY static /usr/share/nginx/html/
