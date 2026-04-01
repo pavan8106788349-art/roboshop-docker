@@ -1,38 +1,18 @@
 services:
-  mongodb:
-    build:
-      context: ./mongodb
-      dockerfile: Dockerfile
-    image: joindevops/mongodb:1.0.0
-    container_name: mongodb
-
-  redis:
-    image: redis:7.0
-    container_name: redis
-
+ services:
   catalogue:
-    build:
-      context: ./catalogue
-      dockerfile: Dockerfile
+    build: ./catalogue
     image: joindevops/catalogue:1.0.0
     container_name: catalogue
     depends_on:
-      - mongodb
-    environment:
-      - MONGO_URL=mongodb://mongodb:27017/catalogue
-
+    - mongodb
   user:
-    build:
-      context: ./user
-      dockerfile: Dockerfile
+    build: ./user
     image: joindevops/user:1.0.0
     container_name: user
     depends_on:
-      - redis
-    environment:
-      - REDIS_HOST=redis
-      - MONGO_URL=mongodb://mongodb:27017/user
-
+    - redis
+    - mongodb
   frontend:
     build:
       context: ./frontend
@@ -44,9 +24,16 @@ services:
     depends_on:
       - catalogue
       - user
+  mongodb:
+    build: ./mongodb # it moves to mongodb directory
+    image: joindevops/mongodb:1.0.0 # docker build -t joindevops/mongodb:1.0.0
+    container_name: mongodb
+  redis:
+    image: redis:7.0
+    container_name: redis     
 
 networks:
   default:
     driver: bridge
     name: roboshop
-    external: false
+    external: false # if true, you need to create network manually
