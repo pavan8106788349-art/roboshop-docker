@@ -39,7 +39,7 @@ services:
   mysql:
     build: ./mysql
     image: pavankumarsri/mysql:1.0.0
-    container-name: mysql
+    container_name: mysql
 
   networks:
   default:
