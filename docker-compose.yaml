@@ -13,6 +13,12 @@ services:
     container_name: user
     depends_on:
     - redis
+  cart:
+    build: ./cart
+    image: joindevops/cart:1.0.0
+    container_name: cart
+    depends_on:
+    - redis
   frontend:
     build: ./frontend
     image: pavankumarsri/frontend:1.0.0
@@ -21,7 +27,8 @@ services:
     - "80:80"
     depends_on:
     - catalogue
-    - user      
+    - user 
+    - cart     
   mongodb:
     build: ./mongodb
     image: pavankumarsri/mongodb:1.0.0
