@@ -1,21 +1,17 @@
-version: "3.8"
-
 services:
   catalogue:
     build: ./catalogue
     image: joindevops/catalogue:1.0.0
     container_name: catalogue
     depends_on:
-      - mongodb
-
+    - mongodb
   user:
     build: ./user
     image: joindevops/user:1.0.0
     container_name: user
     depends_on:
-      - redis
-      - mongodb
-
+    - redis
+    - mongodb
   frontend:
     build:
       context: ./frontend
@@ -27,12 +23,10 @@ services:
     depends_on:
       - catalogue
       - user
-
   mongodb:
     build: ./mongodb
     image: joindevops/mongodb:1.0.0
     container_name: mongodb
-
   redis:
     image: redis:7.0
     container_name: redis
