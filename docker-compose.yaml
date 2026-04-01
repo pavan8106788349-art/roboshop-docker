@@ -36,8 +36,12 @@ services:
   redis:
     image: redis:7.0
     container_name: redis
+  mysql:
+    build: ./mysql
+    image: pavankumarsri/mysql:1.0.0
+    container-name: mysql
 
-networks:
+  networks:
   default:
     driver: bridge
     name: roboshop
