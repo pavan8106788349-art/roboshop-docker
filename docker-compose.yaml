@@ -1,17 +1,21 @@
+version: '3.9'
+
 services:
   catalogue:
     build: ./catalogue
     image: pavankumarsri/catalogue:1.0.0
     container_name: catalogue
     depends_on:
-    - mongodb
+      - mongodb
+
   user:
     build: ./user
     image: pavankumarsri/user:1.0.0
     container_name: user
     depends_on:
-    - redis
-    - mongodb
+      - redis
+      - mongodb
+
   frontend:
     build:
       context: ./frontend
@@ -23,10 +27,12 @@ services:
     depends_on:
       - catalogue
       - user
+
   mongodb:
     build: ./mongodb
     image: pavankumarsri/mongodb:1.0.0
     container_name: mongodb
+
   redis:
     image: redis:7.0
     container_name: redis
@@ -35,4 +41,3 @@ networks:
   default:
     driver: bridge
     name: roboshop
-    external: false # if true, you need to create network manually
