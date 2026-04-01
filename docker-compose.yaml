@@ -15,7 +15,7 @@ services:
     - redis
   frontend:
     build: ./frontend
-    image: nginx:1.0.0
+    image: pavankumarsri/frontend:1.0.0
     container_name: frontend
     ports:
     - "80:80"
