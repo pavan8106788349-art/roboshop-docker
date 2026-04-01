@@ -9,13 +9,13 @@ services:
       - mongodb
   user:
     build: ./user
-    image: joindevops/user:1.0.0
+    image: pavankumarsri/user:1.0.0
     container_name: user
     depends_on:
     - redis
   frontend:
     build: ./frontend
-    image: joindevops/frontend:1.0.0
+    image: pavankumarsri/frontend:1.0.0
     container_name: frontend
     ports:
     - "80:80"
@@ -35,3 +35,4 @@ networks:
     driver: bridge
     name: roboshop
     external: false
+    
