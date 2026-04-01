@@ -1,13 +1,13 @@
 services:
   catalogue:
     build: ./catalogue
-    image: joindevops/catalogue:1.0.0
+    image: pavankumarsri/catalogue:1.0.0
     container_name: catalogue
     depends_on:
     - mongodb
   user:
     build: ./user
-    image: joindevops/user:1.0.0
+    image: pavankumarsri/user:1.0.0
     container_name: user
     depends_on:
     - redis
@@ -16,7 +16,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    image: joindevops/frontend:1.0.0
+    image: pavankumarsri/frontend:1.0.0
     container_name: frontend
     ports:
       - "80:80"
@@ -25,7 +25,7 @@ services:
       - user
   mongodb:
     build: ./mongodb
-    image: joindevops/mongodb:1.0.0
+    image: pavankumarsri/mongodb:1.0.0
     container_name: mongodb
   redis:
     image: redis:7.0
