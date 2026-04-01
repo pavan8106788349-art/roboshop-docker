@@ -18,7 +18,7 @@ services:
        dockerfile: frontend.Docker
     image: joindevops/frontend:1.0.0
     container_name: frontend
-    depends on:
+    depends_on:
     - catalogue
     - user
   mongodb:
