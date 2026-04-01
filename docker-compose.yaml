@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
   catalogue:
     build: ./catalogue
@@ -35,4 +37,4 @@ networks:
   default:
     driver: bridge
     name: roboshop
-    external: false
+    external: false # if true, you need to create network manually
