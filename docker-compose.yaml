@@ -1,17 +1,14 @@
-
-services:
+ services:
   catalogue:
     build: ./catalogue
-    image: pavankumarsri/catalogue:1.0.0
+    image: joindevops/catalogue:1.0.0
     container_name: catalogue
     depends_on:
-      - mongodb
+    - mongodb
   user:
     build: ./user
-    image: pavankumarsri/user:1.0.0
+    image: joindevops/user:1.0.0
     container_name: user
-    ports:
-    - "8080:8080"
     depends_on:
     - redis
     - mongodb
@@ -24,16 +21,16 @@ services:
     - catalogue
   shipping:
     build: ./shipping
-    image: pavankumarsri/shipping:1.0.0
+    image: joindevops/shipping:1.0.0
     container_name: shipping
     depends_on:
     - mysql
     - cart
   payment:
-     build: ./payment
-     image: pavankumarsri/payment:1.0.0
-     container_name: payment
-     environment:
+    build: ./payment
+    image: joindevops/payment:1.0.0
+    container_name: payment
+    environment:
       CART_HOST: "cart"
       CART_PORT: "8080"
       USER_HOST: "user"
@@ -41,28 +38,28 @@ services:
       AMQP_HOST: "rabbitmq"
       AMQP_USER: "roboshop"
       AMQP_PASS: "roboshop123"
-     depends_on:
-     - cart
-     - user
-     - rabbitmq
+    depends_on:
+    - rabbitmq
+    - cart
+    - user
   frontend:
     build: ./frontend
-    image: pavankumarsri/frontend:1.0.0
+    image: joindevops/frontend:1.0.0
     container_name: frontend
     ports:
-    - "8081:80"
+    - "80:80"
     depends_on:
     - catalogue
-    - user 
+    - user
     - cart
     - shipping
-    - payment   
+    - payment
   mongodb:
-    build: ./mongodb
-    image: pavankumarsri/mongodb:1.0.0
+    build: ./mongodb # it moves to mongodb directory
+    image: joindevops/mongodb:1.0.0 # docker build -t joindevops/mongodb:1.0.0
     container_name: mongodb
     volumes:
-    - mongodb:/data/db
+    - /:/data/db
   redis:
     image: redis:7.0
     container_name: redis
@@ -70,25 +67,25 @@ services:
     - redis:/data
   mysql:
     build: ./mysql
-    image: pavankumarsri/mysql:1.0.0
+    image: joindevops/mysql:1.0.0
     container_name: mysql
     volumes:
-     -mysql:/var/lib/mysql
+    - mysql:/var/lib/mysql
   rabbitmq:
     image: rabbitmq:3
-    environment:
+    environment: 
       RABBITMQ_DEFAULT_USER: roboshop
       RABBITMQ_DEFAULT_PASS: roboshop123
     container_name: rabbitmq
     volumes:
-    - rabbitmq:/var/lib/rabbitmq  
-networks:
+    - rabbitmq:/var/lib/rabbitmq
+ networks:
   default:
     driver: bridge
     name: roboshop
     external: false # if true, you need to create network manually
-volumes:
-   mongodb: # docker volume create mongodb
-   redis:
-   mysql:
-   rabbitmq:    
+ volumes:
+  mongodb: # docker volume create mongodb
+  redis:
+  mysql:
+  rabbitmq: 
