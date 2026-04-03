@@ -21,7 +21,7 @@
     - catalogue
   shipping:
     build: ./shipping
-    image: pavankumar/shipping:1.0.0
+    image: pavankumarsri/shipping:1.0.0
     container_name: shipping
     depends_on:
     - mysql
