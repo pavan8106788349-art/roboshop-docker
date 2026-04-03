@@ -73,7 +73,7 @@ services:
     image: pavankumarsri/mysql:1.0.0
     container_name: mysql
     volumes:
-    - mysql:var/lib/mysql
+     mysql:/var/lib/mysql
   rabbitmq:
     image: rabbitmq:3
     environment:
