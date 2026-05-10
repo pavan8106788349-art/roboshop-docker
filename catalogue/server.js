@@ -46,14 +46,16 @@ app.use((req, res, next) => {
         "us-west1"
     ];
     let span = instana.currentSpan();
-    span.annotate('custom.sdk.tags.datacenter', dcs[Math.floor(Math.random() * dcs.length)]);
-
+    if (span) {
+        span.annotate('custom.sdk.tags.datacenter', dcs[Math.floor(Math.random() * dcs.length)]);
+    }
     next();
 });
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+// Health check
 app.get('/health', (req, res) => {
     var stat = {
         app: 'OK',
@@ -80,7 +82,6 @@ app.get('/products', (req, res) => {
 // product by SKU
 app.get('/product/:sku', (req, res) => {
     if (mongoConnected) {
-        // optionally slow this down
         const delay = process.env.GO_SLOW || 0;
         setTimeout(() => {
             collection.findOne({ sku: req.params.sku }).then((product) => {
@@ -135,7 +136,7 @@ app.get('/categories', (req, res) => {
     }
 });
 
-// search name and description
+// search
 app.get('/search/:text', (req, res) => {
     if (mongoConnected) {
         collection.find({ '$text': { '$search': req.params.text } }).toArray().then((hits) => {
@@ -150,11 +151,14 @@ app.get('/search/:text', (req, res) => {
     }
 });
 
-// set up Mongo
+// Mongo connection
 async function mongoConnect() {
     try {
         const mongoURL = process.env.MONGO_URL || 'mongodb://mongodb:27017/catalogue';
-        const client = await MongoClient.connect(mongoURL, { useNewUrlParser: true, useUnifiedTopology: true });
+        const client = await MongoClient.connect(mongoURL, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true
+        });
         db = client.db('catalogue');
         collection = db.collection('products');
         mongoConnected = true;
@@ -166,7 +170,6 @@ async function mongoConnect() {
     }
 }
 
-// mongodb connection retry loop
 function mongoLoop() {
     mongoConnect().catch((e) => {
         logger.error('ERROR', e);
@@ -176,8 +179,9 @@ function mongoLoop() {
 
 mongoLoop();
 
-// fire it up!
-const port = process.env.CATALOGUE_SERVER_PORT || '8080';
-app.listen(port, () => {
-    logger.info('Started on port', port);
+
+const port = process.env.CATALOGUE_SERVER_PORT || 8080;
+
+app.listen(port, "0.0.0.0", () => {
+    logger.info(`Started on port ${port}`);
 });
