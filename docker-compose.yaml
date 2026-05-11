@@ -1,91 +1,117 @@
+version: "3.9"
+
 services:
 
   mongodb:
-    build: ./mongodb
-    image: pavankumarsri/mongodb:1.0.0
+    image: mongo:6
     container_name: mongodb
     volumes:
       - mongodb:/data/db
+    networks:
+      - roboshop
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
   redis:
-    image: redis:7.0
+    image: redis:7
     container_name: redis
-    volumes:
-      - redis:/data
+    networks:
+      - roboshop
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
 
   mysql:
-    build: ./mysql
-    image: pavankumarsri/mysql:1.0.0
+    image: mysql:8.0
     container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: RoboShop@1
+      MYSQL_DATABASE: roboshop
     volumes:
       - mysql:/var/lib/mysql
+    networks:
+      - roboshop
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
   rabbitmq:
-    image: rabbitmq:3
+    image: rabbitmq:3-management
     container_name: rabbitmq
     environment:
       RABBITMQ_DEFAULT_USER: roboshop
       RABBITMQ_DEFAULT_PASS: roboshop123
-    volumes:
-      - rabbitmq:/var/lib/rabbitmq
+    networks:
+      - roboshop
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
   catalogue:
     build: ./catalogue
     image: pavankumarsri/catalogue:1.0.0
-    container_name: catalogue
     depends_on:
-      - mongodb
+      mongodb:
+        condition: service_healthy
+    networks:
+      - roboshop
 
   user:
     build: ./user
     image: pavankumarsri/user:1.0.0
-    container_name: user
     depends_on:
-      - mongodb
-      - redis
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - roboshop
 
   cart:
     build: ./cart
     image: pavankumarsri/cart:1.0.0
-    container_name: cart
     depends_on:
-      - redis
-      - catalogue
+      redis:
+        condition: service_healthy
+      catalogue:
+        condition: service_started
+    networks:
+      - roboshop
 
   shipping:
     build: ./shipping
     image: pavankumarsri/shipping:1.0.0
-    container_name: shipping
     depends_on:
-      - mysql
-      - cart
-    environment:
-      DB_HOST: mysql
-      DB_USER: root
-      DB_PASS: RoboShop@1
-      DB_NAME: roboshop
+      mysql:
+        condition: service_healthy
+    networks:
+      - roboshop
 
   payment:
     build: ./payment
     image: pavankumarsri/payment:1.0.0
-    container_name: payment
     depends_on:
-      - rabbitmq
-      - cart
-      - user
-    environment:
-      CART_HOST: cart
-      CART_PORT: "8080"
-      USER_HOST: user
-      USER_PORT: "8080"
-      AMQP_HOST: rabbitmq
-      AMQP_USER: roboshop
-      AMQP_PASS: roboshop123
+      rabbitmq:
+        condition: service_healthy
+      cart:
+        condition: service_started
+      user:
+        condition: service_started
+    networks:
+      - roboshop
 
   frontend:
     build: ./frontend
     image: pavankumarsri/frontend:1.0.0
-    container_name: frontend
     ports:
       - "80:80"
     depends_on:
@@ -94,14 +120,13 @@ services:
       - cart
       - shipping
       - payment
+    networks:
+      - roboshop
 
 networks:
-  default:
+  roboshop:
     driver: bridge
-    name: roboshop
 
 volumes:
   mongodb:
-  redis:
   mysql:
-  rabbitmq:
