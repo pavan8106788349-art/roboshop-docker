@@ -59,7 +59,6 @@ services:
       - cart
     networks:
       - roboshop
-
+      
 networks:
-  roboshop:
-   driver: bridge
+  roboshop: {}
