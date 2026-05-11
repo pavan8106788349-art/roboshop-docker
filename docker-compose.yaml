@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
 
   mongodb:
@@ -7,12 +9,22 @@ services:
     container_name: mongodb
     networks:
       - roboshop
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.runCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
   redis:
     image: redis:7
     container_name: redis
     networks:
       - roboshop
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
 
   mysql:
     image: mysql:8.0
@@ -24,61 +36,90 @@ services:
       - ./shipping/db:/docker-entrypoint-initdb.d
     networks:
       - roboshop
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
   catalogue:
     build:
       context: ./catalogue
+    image: catalogue:1.0.0
     container_name: catalogue
+    environment:
+      INSTANA_ENABLED: "false"
     depends_on:
-      - mongodb
+      mongodb:
+        condition: service_healthy
     networks:
       - roboshop
 
   user:
     build:
       context: ./user
+    image: user:1.0.0
     container_name: user
+    environment:
+      INSTANA_ENABLED: "false"
     depends_on:
-      - mongodb
-      - redis
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     networks:
       - roboshop
 
   cart:
     build:
       context: ./cart
+    image: cart:1.0.0
     container_name: cart
+    environment:
+      INSTANA_ENABLED: "false"
     depends_on:
-      - redis
-      - catalogue
+      redis:
+        condition: service_healthy
+      catalogue:
+        condition: service_started
     networks:
       - roboshop
 
   shipping:
     build:
       context: ./shipping
+    image: shipping:1.0.0
     container_name: shipping
-    depends_on:
-      - mysql
     environment:
+      INSTANA_ENABLED: "false"
       DB_HOST: mysql
       DB_USER: root
       DB_PASS: RoboShop@1
       DB_NAME: roboshop
+    depends_on:
+      mysql:
+        condition: service_healthy
     networks:
       - roboshop
 
   frontend:
     build:
       context: ./frontend
+    image: frontend:1.0.0
     container_name: frontend
     ports:
       - "80:80"
+    environment:
+      INSTANA_ENABLED: "false"
     depends_on:
-      - catalogue
-      - user
-      - cart
-      - shipping
+      catalogue:
+        condition: service_started
+      user:
+        condition: service_started
+      cart:
+        condition: service_started
+      shipping:
+        condition: service_started
     networks:
       - roboshop
 
