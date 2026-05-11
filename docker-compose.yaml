@@ -1,128 +1,91 @@
-version: "3.8"
-
 services:
-
-  mongodb:
-    build:
-      context: ./mongodb
-    image: mongodb:1.0.0
-    container_name: mongodb
-    networks:
-      - roboshop
-    healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.runCommand('ping').ok"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-
-  redis:
-    image: redis:7
-    container_name: redis
-    networks:
-      - roboshop
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
-
-  mysql:
-    image: mysql:8.0
-    container_name: mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: RoboShop@1
-      MYSQL_DATABASE: roboshop
-    volumes:
-      - ./shipping/db:/docker-entrypoint-initdb.d
-    networks:
-      - roboshop
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-
   catalogue:
-    build:
-      context: ./catalogue
-    image: catalogue:1.0.0
+    build: ./catalogue
+    image: pavankumarsri/catalogue:1.0.0
     container_name: catalogue
-    environment:
-      INSTANA_ENABLED: "false"
     depends_on:
-      mongodb:
-        condition: service_healthy
-    networks:
-      - roboshop
-
+    - mongodb
   user:
-    build:
-      context: ./user
-    image: user:1.0.0
+    build: ./user
+    image: pavankumarsri/user:1.0.0
     container_name: user
-    environment:
-      INSTANA_ENABLED: "false"
     depends_on:
-      mongodb:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    networks:
-      - roboshop
-
+    - redis
+    - mongodb
   cart:
-    build:
-      context: ./cart
-    image: cart:1.0.0
+    build: ./cart
+    image: pavankumarsri/cart:1.0.0
     container_name: cart
-    environment:
-      INSTANA_ENABLED: "false"
     depends_on:
-      redis:
-        condition: service_healthy
-      catalogue:
-        condition: service_started
-    networks:
-      - roboshop
-
+    - redis
+    - catalogue
   shipping:
-    build:
-      context: ./shipping
-    image: shipping:1.0.0
+    build: ./shipping
+    image: pavankumarsri/shipping:1.0.0
     container_name: shipping
-    environment:
-      INSTANA_ENABLED: "false"
-      DB_HOST: mysql
-      DB_USER: root
-      DB_PASS: RoboShop@1
-      DB_NAME: roboshop
     depends_on:
-      mysql:
-        condition: service_healthy
-    networks:
-      - roboshop
-
+    - mysql
+    - cart
+  payment:
+    build: ./payment
+    image: pavankumarsri/payment:1.0.0
+    container_name: payment
+    environment:
+      CART_HOST: "cart"
+      CART_PORT: "8080"
+      USER_HOST: "user"
+      USER_PORT: "8080"
+      AMQP_HOST: "rabbitmq"
+      AMQP_USER: "roboshop"
+      AMQP_PASS: "roboshop123"
+    depends_on:
+    - rabbitmq
+    - cart
+    - user
   frontend:
-    build:
-      context: ./frontend
-    image: frontend:1.0.0
+    build: ./frontend
+    image: pavankumarsri/frontend:1.0.0
     container_name: frontend
     ports:
-      - "80:80"
-    environment:
-      INSTANA_ENABLED: "false"
+    - "80:80"
     depends_on:
-      catalogue:
-        condition: service_started
-      user:
-        condition: service_started
-      cart:
-        condition: service_started
-      shipping:
-        condition: service_started
-    networks:
-      - roboshop
-
+    - catalogue
+    - user
+    - cart
+    - shipping
+    - payment
+  mongodb:
+    build: ./mongodb # it moves to mongodb directory
+    image: pavankumarsri/mongodb:1.0.0 # docker build -t joindevops/mongodb:1.0.0
+    container_name: mongodb
+    volumes:
+    - /:/data/db
+  redis:
+    image: redis:7.0
+    container_name: redis
+    volumes:
+    - redis:/data
+  mysql:
+    build: ./mysql
+    image: pavankumarsri/mysql:1.0.0
+    container_name: mysql
+    volumes:
+    - mysql:/var/lib/mysql
+  rabbitmq:
+    image: rabbitmq:3
+    environment: 
+      RABBITMQ_DEFAULT_USER: roboshop
+      RABBITMQ_DEFAULT_PASS: roboshop123
+    container_name: rabbitmq
+    volumes:
+    - rabbitmq:/var/lib/rabbitmq
 networks:
-  roboshop:
+  default:
     driver: bridge
+    name: roboshop
+    external: false # if true, you need to create network manually
+volumes:
+  mongodb: # docker volume create mongodb
+  redis:
+  mysql:
+  rabbitmq:
