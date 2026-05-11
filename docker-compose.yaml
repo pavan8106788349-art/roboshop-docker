@@ -8,16 +8,6 @@ services:
     networks:
       - roboshop
 
-  catalogue:
-    build:
-      context: ./catalogue
-    image: catalogue:1.0.0
-    container_name: catalogue
-    depends_on:
-      - mongodb
-    networks:
-      - roboshop
-
   redis:
     image: redis:7
     container_name: redis
@@ -30,6 +20,16 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: RoboShop@1
       MYSQL_DATABASE: roboshop
+    networks:
+      - roboshop
+
+  catalogue:
+    build:
+      context: ./catalogue
+    image: catalogue:1.0.0
+    container_name: catalogue
+    depends_on:
+      - mongodb
     networks:
       - roboshop
 
@@ -56,19 +56,19 @@ services:
       - roboshop
 
   shipping:
-  build:
-    context: ./shipping
-  image: shipping:1.0.0
-  container_name: shipping
-  depends_on:
-    - mysql
-  environment:
-    DB_HOST: mysql
-    DB_USER: root
-    DB_PASS: RoboShop@1
-    DB_NAME: roboshop
-  networks:
-    - roboshop
+    build:
+      context: ./shipping
+    image: shipping:1.0.0
+    container_name: shipping
+    depends_on:
+      - mysql
+    environment:
+      DB_HOST: mysql
+      DB_USER: root
+      DB_PASS: RoboShop@1
+      DB_NAME: roboshop
+    networks:
+      - roboshop
 
   frontend:
     build:
@@ -86,4 +86,5 @@ services:
       - roboshop
 
 networks:
-  roboshop: {}
+  roboshop:
+    driver: bridge
