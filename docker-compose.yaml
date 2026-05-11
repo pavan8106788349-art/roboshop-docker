@@ -56,14 +56,19 @@ services:
       - roboshop
 
   shipping:
-    build:
-      context: ./shipping
-    image: shipping:1.0.0
-    container_name: shipping
-    depends_on:
-      - mysql
-    networks:
-      - roboshop
+  build:
+    context: ./shipping
+  image: shipping:1.0.0
+  container_name: shipping
+  depends_on:
+    - mysql
+  environment:
+    DB_HOST: mysql
+    DB_USER: root
+    DB_PASS: RoboShop@1
+    DB_NAME: roboshop
+  networks:
+    - roboshop
 
   frontend:
     build:
@@ -82,4 +87,3 @@ services:
 
 networks:
   roboshop: {}
-  
