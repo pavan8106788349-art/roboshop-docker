@@ -53,13 +53,11 @@ services:
       - roboshop
 
   cart:
-  image: pavankumarsri/cart:1.0
-  depends_on:
-    - redis
-  depends_on:
+    image: pavankumarsri/cart:1.0
+    depends_on:
       - redis
       - catalogue
-  networks:
+    networks:
       - roboshop
 
   shipping:
