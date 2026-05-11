@@ -5,6 +5,8 @@ services:
       context: ./mongodb
     image: pavankumarsri/mongodb:1.0.0
     container_name: mongodb
+    networks:
+      - roboshop
 
   catalogue:
     build:
@@ -13,20 +15,14 @@ services:
     container_name: catalogue
     depends_on:
       - mongodb
+    networks:
+      - roboshop
 
   redis:
     image: redis:7
     container_name: redis
-
-  mysql:
-    build: ./mysql
-    image: pavankumarsri/mysql:1.0.0
-    container_name: mysql
-    environment:
-     MYSQL_ROOT_PASSWORD: RoboShop@1
-     MYSQL_DATABASE: roboshop
     networks:
-    - roboshop
+      - roboshop
 
   user:
     build:
@@ -65,4 +61,4 @@ services:
       - roboshop
 
 networks:
- roboshop: {}
+  roboshop:
