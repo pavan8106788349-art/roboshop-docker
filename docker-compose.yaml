@@ -62,4 +62,4 @@ services:
 
 networks:
   roboshop:
-  
+    driver: bridge
