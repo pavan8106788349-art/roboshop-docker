@@ -1,41 +1,64 @@
 services:
+
+  mongodb:
+    build:
+      context: ./mongodb
+    image: mongodb:1.0.0
+    container_name: mongodb
+    networks:
+      - roboshop
+
   catalogue:
-    build: ./catalogue
-    image: pavankumarsri/catalogue:1.0.0
+    build:
+      context: ./catalogue
+    image: catalogue:1.0.0
     container_name: catalogue
     depends_on:
-    - mongodb
+      - mongodb
+    networks:
+      - roboshop
+
+  redis:
+    image: redis:7
+    container_name: redis
+    networks:
+      - roboshop
+
   user:
-    build: ./user
-    image: pavankumarsri/user:1.0.0
+    build:
+      context: ./user
+    image: user:1.0.0
     container_name: user
     depends_on:
-    - redis
+      - mongodb
+      - redis
+    networks:
+      - roboshop
+
   cart:
-    build: ./cart
-    image: pavankumarsri/cart:1.0.0
+    build:
+      context: ./cart
+    image: cart:1.0.0
     container_name: cart
     depends_on:
-    - redis
-    - catalogue   
+      - redis
+      - catalogue
+    networks:
+      - roboshop
+
   frontend:
-    build: ./frontend
-    image: pavankumarsri/user:1.0.0
-    container_name: user
+    build:
+      context: ./frontend
+    image: frontend:1.0.0
+    container_name: frontend
+    ports:
+      - "80:80"
     depends_on:
-    - user
-    - catalogue
-    - cart
-  mongodb:
-    build: ./mongodb # it moves to mongodb directory
-    image: pavankumarsri/mongodb:1.0.0 # docker build -t joindevops/mongodb:1.0.0
-    container_name: mongodb
-    volumes:
-    - /:/data/db
-  redis:
-    image: redis:7.0
-    container_name: redis  
+      - catalogue
+      - user
+      - cart
+    networks:
+      - roboshop
 
 networks:
-  default:
-    name: roboshop
+  roboshop:
