@@ -1,12 +1,11 @@
-FROM node:18
+FROM maven:3.9.14
 
 WORKDIR /app
 
-COPY package.json .
-COPY src ./src
+COPY . .
 
-RUN npm install
+RUN mvn clean package -DskipTests
 
 EXPOSE 8080
 
-CMD ["node", "src/server.js"]
+CMD ["java", "-jar", "target/shipping-1.0.jar"]
