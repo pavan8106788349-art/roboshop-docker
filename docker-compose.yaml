@@ -55,11 +55,12 @@ services:
     - shipping
     - payment
   mongodb:
-    build: ./mongodb # it moves to mongodb directory
-    image: pavankumarsri/mongodb:1.0.0 # docker build -t joindevops/mongodb:1.0.0
-    container_name: mongodb
-    volumes:
-    - /:/data/db
+    mongodb:
+  build: ./mongodb
+  image: pavankumarsri/mongodb:1.0.0
+  container_name: mongodb
+  volumes:
+    - mongodb:/data/db
   redis:
     image: redis:7.0
     container_name: redis
@@ -85,7 +86,7 @@ networks:
     name: roboshop
     external: false # if true, you need to create network manually
 volumes:
-  mongodb: # docker volume create mongodb
+  mongodb:
   redis:
   mysql:
   rabbitmq:
