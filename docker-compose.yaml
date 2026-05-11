@@ -3,31 +3,30 @@ services:
   mongodb:
     build:
       context: ./mongodb
-    image: mongodb:1.0.0
+    image: pavankumarsri/mongodb:1.0.0
     container_name: mongodb
-    networks:
-      - roboshop
 
   catalogue:
     build:
       context: ./catalogue
-    image: catalogue:1.0.0
+    image: pavankumarsri/catalogue:1.0.0
     container_name: catalogue
     depends_on:
       - mongodb
-    networks:
-      - roboshop
 
   redis:
     image: redis:7
     container_name: redis
-    networks:
-      - roboshop
+
+  mysql:
+    build: ./mysql
+    image: pavankumarsri/mysql:1.0.0
+    container_name: mysql    
 
   user:
     build:
       context: ./user
-    image: user:1.0.0
+    image: pavankumarsri/user:1.0.0
     container_name: user
     depends_on:
       - mongodb
@@ -38,7 +37,7 @@ services:
   cart:
     build:
       context: ./cart
-    image: cart:1.0.0
+    image: pavankumarsri/cart:1.0.0
     container_name: cart
     depends_on:
       - redis
@@ -49,7 +48,7 @@ services:
   frontend:
     build:
       context: ./frontend
-    image: frontend:1.0.0
+    image: pavankumarsri/frontend:1.0.0
     container_name: frontend
     ports:
       - "80:80"
