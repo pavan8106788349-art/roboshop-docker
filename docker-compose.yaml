@@ -1,19 +1,23 @@
+version: "3.8"
+
 services:
-  catalogue:
-  build:
-    dockerfile: catalogue.Dockerfile # it moves to mongodb directory
-  image: pavankumarsri/catalogue:1.0.0 # docker build -t pavankumarsri/mongodb:1.0.0
-  container_name: catalogue
-  depends on:
-  - mongodb 
+
   mongodb:
-  build:
-    dockerfile: mongodb.Dockerfile # it moves to mongodb directory
-  image: pavankumarsri/mongodb:1.0.0 # docker build -t pavankumarsri/mongodb:1.0.0
-  container_name: mongodb
+    build:
+      context: ./mongodb
+      dockerfile: Dockerfile
+    image: pavankumarsri/mongodb:1.0.0
+    container_name: mongodb
+
+  catalogue:
+    build:
+      context: ./catalogue
+      dockerfile: Dockerfile
+    image: pavankumarsri/catalogue:1.0.0
+    container_name: catalogue
+    depends_on:
+      - mongodb
 
 networks:
- default:
-  driver: bridge
-  name: roboshop
-  external: false # if true you need to create network manually  
+  default:
+    name: roboshop
