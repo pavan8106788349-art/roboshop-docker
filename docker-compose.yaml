@@ -24,7 +24,9 @@ services:
     container_name: mysql
     environment:
      MYSQL_ROOT_PASSWORD: RoboShop@1
-     MYSQL_DATABASE: roboshop  
+     MYSQL_DATABASE: roboshop
+    networks:
+    - roboshop
 
   user:
     build:
