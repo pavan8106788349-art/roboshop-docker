@@ -1,18 +1,18 @@
 
 services:
-
-  mongodb:
-    image: mongo:6
-    container_name: mongodb
-    volumes:
-      - mongodb:/data/db
-    networks:
-      - roboshop
-    healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
+mongodb:
+  image: mongo:6
+  container_name: mongodb
+  volumes:
+    - mongodb:/data/db
+    - ./mongodb:/docker-entrypoint-initdb.d  
+  networks:
+    - roboshop
+  healthcheck:
+    test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+    interval: 10s
+    timeout: 5s
+    retries: 10
 
   redis:
     image: redis:7
