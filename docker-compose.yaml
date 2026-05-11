@@ -1,66 +1,74 @@
 services:
+
   mongodb:
     build:
       context: ./mongodb
-    image: pavankumarsri/mongodb:1.0.0
+    image: mongodb:1.0.0
     container_name: mongodb
     networks:
       - roboshop
+
   catalogue:
     build:
       context: ./catalogue
-    image: pavankumarsri/catalogue:1.0.0
+    image: catalogue:1.0.0
     container_name: catalogue
     depends_on:
       - mongodb
     networks:
       - roboshop
+
   redis:
     image: redis:7
     container_name: redis
     networks:
       - roboshop
+
   mysql:
-  image: mysql:8.0
-  container_name: mysql
-  environment:
-    MYSQL_ROOT_PASSWORD: RoboShop@1
-    MYSQL_DATABASE: roboshop
-  networks:
-    - roboshop    
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: RoboShop@1
+      MYSQL_DATABASE: roboshop
+    networks:
+      - roboshop
+
   user:
     build:
       context: ./user
-    image: pavankumarsri/user:1.0.0
+    image: user:1.0.0
     container_name: user
     depends_on:
       - mongodb
       - redis
     networks:
       - roboshop
+
   cart:
     build:
       context: ./cart
-    image: pavankumarsri/cart:1.0.0
+    image: cart:1.0.0
     container_name: cart
     depends_on:
       - redis
       - catalogue
     networks:
       - roboshop
+
   shipping:
     build:
       context: ./shipping
-    image: pavankumarsri/shipping:1.0.0
+    image: shipping:1.0.0
     container_name: shipping
     depends_on:
       - mysql
     networks:
-      - roboshop  
+      - roboshop
+
   frontend:
     build:
       context: ./frontend
-    image: pavankumarsri/frontend:1.0.0
+    image: frontend:1.0.0
     container_name: frontend
     ports:
       - "80:80"
@@ -73,4 +81,4 @@ services:
       - roboshop
 
 networks:
-  roboshop:
+  roboshop: {}
