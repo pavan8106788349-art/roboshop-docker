@@ -1,29 +1,21 @@
+version: "3.8"
 
 services:
-mongodb:
-  image: mongo:6
-  container_name: mongodb
-  volumes:
-    - mongodb:/data/db
-    - ./mongodb:/docker-entrypoint-initdb.d  
-  networks:
-    - roboshop
-  healthcheck:
-    test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
-    interval: 10s
-    timeout: 5s
-    retries: 10
+
+  mongodb:
+    image: mongo:6
+    container_name: mongodb
+    volumes:
+      - mongodb:/data/db
+      - ./mongodb:/docker-entrypoint-initdb.d
+    networks:
+      - roboshop
 
   redis:
     image: redis:7
     container_name: redis
     networks:
       - roboshop
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 3s
-      retries: 5
 
   mysql:
     image: mysql:8.0
@@ -35,11 +27,6 @@ mongodb:
       - mysql:/var/lib/mysql
     networks:
       - roboshop
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -49,11 +36,6 @@ mongodb:
       RABBITMQ_DEFAULT_PASS: roboshop123
     networks:
       - roboshop
-    healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
 
   catalogue:
     build: ./catalogue
