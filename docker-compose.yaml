@@ -59,69 +59,60 @@ services:
   catalogue:
     build: ./catalogue
     image: pavankumarsri/catalogue:1.0.0
-    depends_on:
-      mongodb:
-        condition: service_healthy
     networks:
       - roboshop
+    depends_on:
+      - mongodb
 
   user:
     build: ./user
     image: pavankumarsri/user:1.0.0
-    depends_on:
-      mongodb:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
     networks:
       - roboshop
+    depends_on:
+      - mongodb
+      - redis
 
   cart:
     build: ./cart
     image: pavankumarsri/cart:1.0.0
-    depends_on:
-      redis:
-        condition: service_healthy
-      catalogue:
-        condition: service_started
     networks:
       - roboshop
+    depends_on:
+      - redis
+      - catalogue
 
   shipping:
     build: ./shipping
     image: pavankumarsri/shipping:1.0.0
-    depends_on:
-      mysql:
-        condition: service_healthy
     networks:
       - roboshop
+    depends_on:
+      - mysql
 
   payment:
     build: ./payment
     image: pavankumarsri/payment:1.0.0
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-      cart:
-        condition: service_started
-      user:
-        condition: service_started
     networks:
       - roboshop
+    depends_on:
+      - rabbitmq
+      - cart
+      - user
 
   frontend:
     build: ./frontend
     image: pavankumarsri/frontend:1.0.0
     ports:
       - "80:80"
+    networks:
+      - roboshop
     depends_on:
       - catalogue
       - user
       - cart
       - shipping
       - payment
-    networks:
-      - roboshop
 
 networks:
   roboshop:
