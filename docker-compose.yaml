@@ -3,9 +3,11 @@ version: "3.8"
 services:
 
   frontend:
-    image: pavankumarsri/frontend:1.0.0
-    ports:
-      - "80:80"
+  image: pavankumarsri/frontend:1.0.0
+  ports:
+    - "80:80"
+  volumes:
+    - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
 
   cart:
     image: pavankumarsri/cart-service:1.0.0
