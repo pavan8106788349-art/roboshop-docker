@@ -19,8 +19,8 @@ services:
     image: pavankumarsri/payment:1.0.0
 
   shipping:
-  build: ./shipping
-  image: pavankumarsri/shipping:1.0.0
+    build: ./shipping
+    image: pavankumarsri/shipping:1.0.0
 
   mysql:
     image: mysql:8.0
