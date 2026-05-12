@@ -1,102 +1,43 @@
+version: "3.8"
+
 services:
 
-  mongodb:
-    image: mongo:6
-    container_name: mongodb
-    volumes:
-      - mongodb:/data/db
-      - ./mongodb:/docker-entrypoint-initdb.d
-    networks:
-      - roboshop
-
-  redis:
-    image: redis:7
-    container_name: redis
-    networks:
-      - roboshop
-
-  mysql:
-    image: mysql:8.0
-    container_name: mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: RoboShop@1
-      MYSQL_DATABASE: roboshop
-    volumes:
-      - mysql:/var/lib/mysql
-    networks:
-      - roboshop
-
-  rabbitmq:
-    image: rabbitmq:3-management
-    container_name: rabbitmq
-    environment:
-      RABBITMQ_DEFAULT_USER: roboshop
-      RABBITMQ_DEFAULT_PASS: roboshop123
-    networks:
-      - roboshop
-
-  catalogue:
-    build: ./catalogue
-    image: pavankumarsri/catalogue:1.0.0
-    depends_on:
-      - mongodb
-    networks:
-      - roboshop
-
-  user:
-    build: ./user
-    image: pavankumarsri/user:1.0.0
-    depends_on:
-      - mongodb
-      - redis
-    networks:
-      - roboshop
-
-  cart:
-    build: ./cart
-    image: pavankumarsri/cart-service:1.0.0
-    depends_on:
-      - redis
-      - catalogue
-    networks:
-      - roboshop
-
-  shipping:
-    build: ./shipping
-    image: pavankumarsri/shipping:1.0.0
-    depends_on:
-      - mysql
-    networks:
-      - roboshop
-
-  payment:
-    build: ./payment
-    image: pavankumarsri/payment:1.0.0
-    depends_on:
-      - rabbitmq
-      - cart
-      - user
-    networks:
-      - roboshop
-
   frontend:
-    build: ./frontend
     image: pavankumarsri/frontend:1.0.0
     ports:
       - "80:80"
-    depends_on:
-      - catalogue
-      - user
-      - cart
-      - shipping
-      - payment
-    networks:
-      - roboshop
 
-networks:
-  roboshop:
-    driver: bridge
+  cart:
+    image: pavankumarsri/cart-service:1.0.0
 
-volumes:
-  mongodb:
+  user:
+    image: pavankumarsri/user:1.0.0
+
+  catalogue:
+    image: pavankumarsri/catalogue:1.0.0
+
+  payment:
+    image: pavankumarsri/payment:1.0.0
+
+  shipping:
+    image: pavankumarsri/shipping:1.0.0
+
   mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: RoboShop@1
+      MYSQL_DATABASE: roboshop
+    ports:
+      - "3306:3306"
+
+  redis:
+    image: redis:7
+
+  mongo:
+    image: mongo:6
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "15672:15672"
+      - "5672:5672"
