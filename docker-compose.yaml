@@ -1,3 +1,4 @@
+version: "3.8"
 
 services:
 
@@ -12,19 +13,19 @@ services:
   user:
     image: pavankumarsri/user:1.0.0
 
-catalogue:
-  image: pavankumarsri/catalogue:1.0.0
-  ports:
-    - "8080:8080"
-  environment:
-    MONGO_URL: mongodb://mongo:27017/catalogue
+  catalogue:
+    image: pavankumarsri/catalogue:1.0.0
+    ports:
+      - "8080:8080"
+    environment:
+      MONGO_URL: mongodb://mongo:27017/catalogue
 
   payment:
     image: pavankumarsri/payment:1.0.0
 
   shipping:
-    build: ./shipping
     image: pavankumarsri/shipping:1.0.0
+    build: ./shipping
 
   mysql:
     image: mysql:8.0
