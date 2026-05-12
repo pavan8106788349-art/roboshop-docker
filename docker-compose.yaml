@@ -12,13 +12,13 @@ services:
 
   user:
     image: pavankumarsri/user:1.0.0
-
+ 
   catalogue:
-    image: pavankumarsri/catalogue:1.0.0
-    ports:
-      - "8080:8080"
-    environment:
-      mongodb://mongo:27017/roboshop
+   image: pavankumarsri/catalogue:1.0.0
+   ports:
+     - "8080:8080"
+   environment:
+     MONGO_URL: mongodb://mongo:27017/roboshop
 
   payment:
     image: pavankumarsri/payment:1.0.0
