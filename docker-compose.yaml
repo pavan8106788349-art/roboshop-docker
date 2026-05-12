@@ -15,7 +15,7 @@ services:
   catalogue:
     image: pavankumarsri/catalogue:1.0.0
     environment:
-    MONGO_URL: mongodb://mongo:27017/catalogue
+     MONGO_URL: mongodb://mongo:27017/catalogue
 
   payment:
     image: pavankumarsri/payment:1.0.0
