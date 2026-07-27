@@ -1,4 +1,3 @@
-
 services:
   catalogue:
     build:
@@ -9,29 +8,33 @@ services:
       - mongodb
     environment:
       MONGO_URL: mongodb://mongodb:27017/catalogue
+
   user:
     build:
       dockerfile: user.Dockerfile
     image: pavankumarsri/user:1.0.0
     container_name: user
     depends_on:
-    - redis 
+      - redis
+
   frontend:
     build:
       dockerfile: frontend.Dockerfile
     image: pavankumarsri/frontend:1.0.0
     container_name: frontend
     depends_on:
-    - catalogue
-    - user 
+      - catalogue
+      - user
+
   mongodb:
     build:
       dockerfile: mongodb.Dockerfile
     image: pavankumarsri/mongodb:1.0.0
     container_name: mongodb
-    redis:
-      image: redis:7.0
-      container_name: redis
+
+  redis:
+    image: redis:7.0
+    container_name: redis
 
 networks:
   default:
