@@ -1,7 +1,6 @@
 services:
   catalogue:
-    build:
-      dockerfile: catalogue.Dockerfile
+    build: ./catalogue
     image: pavankumarsri/catalogue:1.0.0
     container_name: catalogue
     depends_on:
@@ -10,16 +9,14 @@ services:
       MONGO_URL: mongodb://mongodb:27017/catalogue
 
   user:
-    build:
-      dockerfile: user.Dockerfile
+    build: ./user
     image: pavankumarsri/user:1.0.0
     container_name: user
     depends_on:
       - redis
 
   frontend:
-    build:
-      dockerfile: frontend.Dockerfile
+    build: ./frontend
     image: pavankumarsri/frontend:1.0.0
     container_name: frontend
     ports:
@@ -29,8 +26,7 @@ services:
       - user
 
   mongodb:
-    build:
-      dockerfile: mongodb.Dockerfile
+    build: ./mongodb
     image: pavankumarsri/mongodb:1.0.0
     container_name: mongodb
 
