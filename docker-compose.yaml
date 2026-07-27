@@ -6,16 +6,19 @@ services:
     image: pavankumarsri/catalogue:1.0.0
     container_name: catalogue
     depends_on:
-    - mongodb
+      - mongodb
+    environment:
+      MONGO_URL: mongodb://mongodb:27017/catalogue
+
   mongodb:
     build:
-      dockerfile: mongodb.Dockerfile # it moves to mongodb directory
-    image:  pavankumarsri/mongodb:1.0.0 # docker build -t pavankumarsri/mongodb:1.0.0
+      dockerfile: mongodb.Dockerfile
+    image: pavankumarsri/mongodb:1.0.0
     container_name: mongodb
 
 networks:
   default:
     driver: bridge
     name: roboshop
-    external: false # if true you need to create network manually
+    external: false
 
