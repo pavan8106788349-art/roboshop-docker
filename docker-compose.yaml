@@ -22,6 +22,13 @@ services:
     depends_on:
       - redis  
 
+  shipping:
+    build: ./shipping
+    image: pavankumarsri/shipping:1.0.0
+    container_name: shipping
+    depends_on:
+      - mysql  
+
   frontend:
     build: ./frontend
     image: pavankumarsri/frontend:1.0.0
@@ -32,6 +39,7 @@ services:
       - catalogue
       - user
       - cart
+      - shipping
 
   mongodb:
     build: ./mongodb
