@@ -67,7 +67,7 @@ services:
     image: pavankumarsri/mongodb:1.0.0
     container_name: mongodb
     volumes:
-    - /:/data/db
+    - mongodb:/data/db
 
   redis:
     image: redis:7.0
